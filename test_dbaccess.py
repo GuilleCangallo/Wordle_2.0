@@ -29,3 +29,18 @@ def test_obtener_palabras_jugadas_existe():
 def test_obtener_palabra_azar_existe():
     dba_attrs = dir(dba)
     assert 'obtener_palabra_azar' in dba_attrs
+
+@pytest.fixture
+def conn_fixture():
+    pytest.dbconn = dba.crear_conexion()
+    
+@pytest.mark.usefixtures("conn_fixture")
+def test_crear_conexion():
+    conn = pytest.dbconn
+    assert conn
+    
+@pytest.mark.usefixtures("conn_fixture")
+@pytest.mark.parametrize('tabla', DB_TABLES)
+def test_chequear_tabla(tabla):
+    resultado = dba.ejecutar_consulta(pytest.dbconn, "SHOW TABLES LIKE %s", (tabla,), fetch=True)
+    assert len(resultado) == 1

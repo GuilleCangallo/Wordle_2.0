@@ -44,3 +44,14 @@ def test_crear_conexion():
 def test_chequear_tabla(tabla):
     resultado = dba.ejecutar_consulta(pytest.dbconn, "SHOW TABLES LIKE %s", (tabla,), fetch=True)
     assert len(resultado) == 1
+
+#Se crea anteriormente un registro en la tabla jugadores que tenga como nombre "Pedro",
+# y luego se ejecuta el siguiente test:    
+@pytest.mark.usefixtures("conn_fixture") 
+def test_cargar_usuario_fallido():
+    resultado = dba.cargar_usuario(pytest.dbconn, "Pedro")
+    assert resultado == False
+    
+@pytest.mark.usefixtures("conn_fixture")
+def test_cargar_usuario_exitoso():
+    dba.cargar_usuario(pytest.dbconn, "Juan")

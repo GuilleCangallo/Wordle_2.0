@@ -1,6 +1,7 @@
 from typing import List
 import mysql.connector as db
 from constantes import DB_HOSTNAME,DB_DATABASE,DB_PASSWORD,DB_USERNAME
+import random
 
 def crear_conexion() -> db.pooling.PooledMySQLConnection | db.MySQLConnection:
     return db.connect(
@@ -36,3 +37,11 @@ def cargar_jugada(dbconn, nombre_jugador, palabra_id, intentos):
     jugador_id = ejecutar_consulta(dbconn, "SELECT id FROM jugadores WHERE nombre = %s", (nombre_jugador,), fetch=True)
     ejecutar_consulta(dbconn, "INSERT INTO jugadas (palabra, jugador, intentos) VALUES (%s, %s, %s)", (palabra_id, jugador_id, intentos))
 
+def obtener_palabras_jugadas(dbconn, nombre_jugador):
+    jugador_id = ejecutar_consulta(dbconn, "SELECT id FROM jugadores WHERE nombre = %s", (nombre_jugador,), fetch=True)
+    return [palabra[0] for palabra in ejecutar_consulta("SELECT id FROM jugadas WHERE jugador = %s", (jugador_id,), fetch=True)]
+    
+def obtener_palabra_azar(dbconn, ids_excluidos):
+    consulta = "SELECT id FROM jugadores WHERE id NOT IN (%s)" & ',' .join(['%s'] * len(ids_excluidos))
+    palabras_disponibles = [palabra[0] for palabra in ejecutar_consulta(dbconn, consulta, ids_excluidos, fetch=True)]
+    return random.choice(palabras_disponibles) if palabras_disponibles else None

@@ -55,3 +55,18 @@ def test_cargar_usuario_fallido():
 @pytest.mark.usefixtures("conn_fixture")
 def test_cargar_usuario_exitoso():
     dba.cargar_usuario(pytest.dbconn, "Juan")
+
+@pytest.mark.usefixtures("conn_fixture")
+def test_cargar_jugada_fallida_intentos():
+    resultado = dba.cargar_jugada(pytest.dbconn, "Pedro", 2, 7)
+    assert resultado == False
+    
+@pytest.mark.usefixtures("conn_fixture")
+def test_cargar_jugada_fallida_jugador_inexistente():
+    resultado = dba.cargar_jugada(pytest.dbconn, "", 5, 6)
+    assert resultado == False
+    
+@pytest.mark.usefixtures("conn_fixture")
+def test_cargar_jugada():
+    resultado = dba.cargar_jugada(pytest.dbconn, "Pedro", 4, 4)
+    assert resultado == True

@@ -22,3 +22,17 @@ def ejecutar_consulta(conn : db.MySQLConnection, consulta : str, parametros=(), 
         conn.commit()
         cursor.close()
         conn.close()
+
+def cargar_usuario(dbconn, nombre):
+    ejecutar_consulta(dbconn, "INSERT INTO jugadores (nombre) VALUES (%s)", (nombre,))
+    
+def existe_jugador(dbconn, nombre):
+    resultado = ejecutar_consulta(dbconn, "SELECT id FROM jugadores WHERE nombre = %s", (nombre,), fetch=True)
+    return len(resultado) > 0
+
+def cargar_jugada(dbconn, nombre_jugador, palabra_id, intentos):
+    if not existe_jugador(dbconn, nombre_jugador) or intentos > 6:
+        return False
+    jugador_id = ejecutar_consulta(dbconn, "SELECT id FROM jugadores WHERE nombre = %s", (nombre_jugador,), fetch=True)
+    ejecutar_consulta(dbconn, "INSERT INTO jugadas (palabra, jugador, intentos) VALUES (%s, %s, %s)", (palabra_id, jugador_id, intentos))
+

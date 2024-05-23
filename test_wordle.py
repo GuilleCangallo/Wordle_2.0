@@ -8,3 +8,7 @@ def test_encontrar_letra_palabra_existe():
 def test_comparar_palabras_existe():
     w_attrs = dir(w)
     assert 'comparar_palabras' in w_attrs
+
+def test_encontrar_letra_palabra():
+    resultado = w.encontrar_letra_palabra("ohio", 'o')
+    assert len(resultado) == 2
